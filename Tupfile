@@ -1,12 +1,6 @@
-CC = clang
-LEVEL = -O3
+CC = clang -O3
 
-CODEGEN = $(CC) $(LEVEL) -S
-COMPILE = $(CC) $(LEVEL) -c
-LINK = $(CC) $(LEVEL)
-
-: foreach src/*.ll |> ^ OPT %f^ $(CODEGEN) -emit-llvm %f -o %o |> build/%B.ll
-: foreach src/*.ll |> ^ LLC [asm] %f^ $(CODEGEN) %f -o %o |> build/%B.s
-
-: foreach src/*.ll |> ^ LLC [obj] %f^ $(COMPILE) %f -o %o |> build/%B.o
-: build/*.o |> ^ Linking binary "life"^ $(LINK) %f -o %o |> bin/life
+: foreach src/*.ll |> ^ OPT %f^ $(CC) -S -emit-llvm %f -o %o |> build/%B.ll
+: foreach build/*.ll |> ^ LLC [asm] %f^ $(CC) -S %f -o %o |> build/%B.s
+: foreach build/*.s |> ^ LLC [obj] %f^ $(CC) -c %f -o %o |> build/%B.o
+: build/*.o |> ^ Linking binary "life"^ $(CC) %f -o %o |> bin/life
