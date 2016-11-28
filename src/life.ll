@@ -193,6 +193,7 @@ body.2:
 
 ;;; Update grid
 
+; Computes the next generation and writes it into the auxiliary array.
 define private void @update_grid(%Grid* %g) {
 entry:
   %width.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 3
@@ -227,6 +228,7 @@ body.3:
   ret void
 }
 
+; Updates a single cell at location (i,j).
 define private void @update_cell(%Grid* %g, i32 %i, i32 %j) {
 entry:
   %index = call i32 @coord_to_index(%Grid* %g, i32 %i, i32 %j)
@@ -245,6 +247,7 @@ entry:
   ret void
 }
 
+; Returns the number of live neighbours that the cell at (i,j) has.
 define private i32 @live_neighbours(%Grid* readonly %g, i32 %i, i32 %j) {
 entry:
   %im1 = sub i32 %i, 1
@@ -269,6 +272,7 @@ entry:
   ret i32 %res.6
 }
 
+; Returns true if the cell at (i,j) is alive in the primary array.
 define private i32 @cell_is_alive(%Grid* readonly %g, i32 %i, i32 %j) {
 entry:
   %width.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 3
@@ -298,6 +302,7 @@ body.2:
   ret i32 0
 }
 
+; Converts a coordinate pair to an index into the array. Must be in range.
 define private i32 @coord_to_index(%Grid* readonly %g, i32 %i, i32 %j) {
 entry:
   %width.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 3
