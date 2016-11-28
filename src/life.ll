@@ -240,7 +240,7 @@ entry:
   %aux.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 1
   %aux = load i8*, i8** %aux.ptr
   %ptr = getelementptr i8, i8* %aux, i32 %index
-  %char = select i1 %next, i8 88, i8 32
+  %char = select i1 %next, i8 88, i8 46
   store i8 %char, i8* %ptr
   ret void
 }
@@ -271,18 +271,6 @@ entry:
 
 define private i32 @cell_is_alive(%Grid* readonly %g, i32 %i, i32 %j) {
 entry:
-  %index = call i32 @coord_to_index(%Grid* %g, i32 %i, i32 %j)
-  %primary.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 0
-  %primary = load i8*, i8** %primary.ptr
-  %ptr = getelementptr i8, i8* %primary, i32 %index
-  %char = load i8, i8* %ptr
-  %cond = icmp eq i8 %char, 88
-  %res = select i1 %cond, i32 1, i32 0
-  ret i32 %res
-}
-
-define private i32 @coord_to_index(%Grid* readonly %g, i32 %i, i32 %j) {
-entry:
   %width.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 3
   %height.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 4
   %width = load i32, i32* %width.ptr
@@ -291,15 +279,32 @@ entry:
   %cond.ih = icmp eq i32 %i, %height
   %cond.jl = icmp eq i32 %j, -1
   %cond.jh = icmp eq i32 %j, %width
-  %wm1 = sub i32 %width, 1
-  %hm1 = sub i32 %height, 1
-  %i.0 = select i1 %cond.il, i32 %hm1, i32 %i
-  %i.1 = select i1 %cond.ih, i32 0, i32 %i.0
-  %j.0 = select i1 %cond.jl, i32 %wm1, i32 %j
-  %j.1 = select i1 %cond.jh, i32 0, i32 %j.0
+  %outside.0 = select i1 %cond.il, i1 true, i1 %cond.ih
+  %outside.1 = select i1 %outside.0, i1 true, i1 %cond.jl
+  %outside.2 = select i1 %outside.1, i1 true, i1 %cond.jh
+  br i1 %outside.2, label %body.2, label %body.1
+
+body.1:
+  %index = call i32 @coord_to_index(%Grid* %g, i32 %i, i32 %j)
+  %primary.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 0
+  %primary = load i8*, i8** %primary.ptr
+  %ptr = getelementptr i8, i8* %primary, i32 %index
+  %char = load i8, i8* %ptr
+  %cond = icmp eq i8 %char, 88
+  %res = select i1 %cond, i32 1, i32 0
+  ret i32 %res
+
+body.2:
+  ret i32 0
+}
+
+define private i32 @coord_to_index(%Grid* readonly %g, i32 %i, i32 %j) {
+entry:
+  %width.ptr = getelementptr %Grid, %Grid* %g, i64 0, i32 3
+  %width = load i32, i32* %width.ptr
   %wp1 = add i32 %width, 1
-  %res.0 = mul i32 %i.1, %wp1
-  %res.1 = add i32 %res.0, %j.1
+  %res.0 = mul i32 %i, %wp1
+  %res.1 = add i32 %res.0, %j
   ret i32 %res.1
 }
 
