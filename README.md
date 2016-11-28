@@ -24,7 +24,7 @@ The `life` executable takes two command-lien arguments:
 1. **Filename**: A text file containing the initial grid.
 2. **Delay**: The number of milliseconds to delay between each update.
 
-For example, `life grid.txt 250` would load the grid in "grid.txt" and advance to the next generation four times per second.
+For example, `life grid.txt 250` would load "grid.txt" and advance to the next generation four times per second.
 
 The grid file must have the following format:
 
@@ -33,7 +33,7 @@ The grid file must have the following format:
 - Live cells are represented by "X" characters.
 - Dead cells are represented by "." characters (periods).
 
-Try running `bin/life gosper.txt 100`.
+Try running `bin/life gosper.txt 100` :)
 
 ## License
 
