@@ -1,41 +1,42 @@
-# Life
+# LLVM Life
 
-This program is a Morse code utility. It has three modes:
+For fun, I decided to implement [Conway's Game of Life][1] in [LLVM assembly][2]. It runs in the terminal, using a couple ANSI escape codes to clear the screen before each redraw.
 
-1. **Encode**: Convert regular text to Morse code.
-2. **Decode**: Convert Morse code back to regular text.
-3. **Transmit**: Pretend you're operating a telegraph.
-
-It supports ASCII letters, numbers, and most punctuation. See [code.c](src/code.c) for the full list.
+[1]: https://en.wikipedia.org/wiki/Conway's_Game_of_Life
+[2]: http://llvm.org/docs/LangRef.html
 
 ## Build
 
-I use the [tup build system][1] for this project. On OS X, it's easy:
+I use the [tup build system][1] for this project. On macOS, it's easy:
 
 1. `brew install homebrew/fuse/tup`
-2. `cd /path/to/morse`
+2. `cd /path/to/llvm-life`
 3. `tup`
-4. `bin/morse`
+
+Or, you can just run `clang` on `src/life.ll` to compile it manually.
 
 [1]: http://gittup.org/tup/
 
 ## Usage
 
-The encode and decode modes operate on streams, so you can use them interactively or in pipelines.
+The `life` executable takes two command-lien arguments:
 
-```sh
-$ morse -h
-usage: morse [-e | -d | -t]
-$ echo "The quick brown fox" | morse -e
-- .... . / --.- ..- .. -.-. -.- / -... .-. --- .-- -. / ..-. --- -..-
-$ echo "- .... . / --.- ..- .. -.-. -.-" | morse -d
-THE QUICK
-$ echo "- .... .. ... / .. ... / -- --- .-. ... . / -.-. --- -.. ." | morse -d
-THIS IS MORSE CODE
-```
+1. **Filename**: A text file containing the initial grid.
+2. **Delay**: The number of milliseconds to delay between each update.
+
+For example, `life grid.txt 250` would load the grid in "grid.txt" and advance to the next generation four times per second.
+
+The grid file must have the following format:
+
+- Every line has the same number of characters.
+- Every line is terminated by a Unix-style line break.
+- Live cells are represented by "X" characters.
+- Dead cells are represented by "." characters (periods).
+
+Try running `bin/life gosper.txt 100`.
 
 ## License
 
 © 2016 Mitchell Kember
 
-Life is available under the MIT License; see [LICENSE](LICENSE.md) for details.
+LLVM Life is available under the MIT License; see [LICENSE](LICENSE.md) for details.
