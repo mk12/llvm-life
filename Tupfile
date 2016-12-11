@@ -1,6 +1,0 @@
-CC = clang -O3
-
-: foreach src/*.ll |> ^ OPT %f^ $(CC) -S -emit-llvm %f -o %o |> build/%B.ll
-: foreach build/*.ll |> ^ LLC [asm] %f^ $(CC) -S %f -o %o |> build/%B.s
-: foreach build/*.s |> ^ LLC [obj] %f^ $(CC) -c %f -o %o |> build/%B.o
-: build/*.o |> ^ Linking binary "life"^ $(CC) %f -o %o |> bin/life

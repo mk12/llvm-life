@@ -7,19 +7,11 @@ For fun, I decided to implement [Conway's Game of Life][1] in [LLVM assembly][2]
 
 ## Build
 
-I use the [tup build system][1] for this project. On macOS, it's easy:
-
-1. `brew install homebrew/fuse/tup`
-2. `cd /path/to/llvm-life`
-3. `tup`
-
-Or, you can just run `clang` on `src/life.ll` to compile it manually.
-
-[1]: http://gittup.org/tup/
+Just run `make`.
 
 ## Usage
 
-The `life` executable takes two command-lien arguments:
+The `life` executable takes two command-line arguments:
 
 1. **Filename**: A text file containing the initial grid.
 2. **Delay**: The number of milliseconds to delay between each update.
