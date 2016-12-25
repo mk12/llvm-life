@@ -23,8 +23,16 @@ target triple = "x86_64-apple-macosx10.12.0"
 
 @.read_mode = private unnamed_addr constant [2 x i8] c"r\00"
 @.print_fmt = private unnamed_addr constant [12 x i8] c"\1B[2J\1B[H%.*s\00"
+@.open_alt = private unnamed_addr constant [9 x i8] c"\1B[?1049h\00"
+@.close_alt = private unnamed_addr constant [9 x i8] c"\1B[?1049l\00"
+
+;;; Globals
+
+@keep_running = private global i1 true
 
 ;;; Declarations
+
+declare void (i32)* @signal(i32, void (i32)*)
 
 declare i32 @printf(i8* readonly, ...)
 declare void @exit(i32) noreturn
@@ -51,6 +59,7 @@ entry:
   br i1 %right, label %body.0, label %error
 
 body.0:
+  call void (i32)* @signal(i32 2, void (i32)* @handle_sigint)
   %ptr1 = getelementptr inbounds i8*, i8** %argv, i64 1
   %ptr2 = getelementptr inbounds i8*, i8** %argv, i64 2
   %name = load i8*, i8** %ptr1
@@ -60,16 +69,32 @@ body.0:
   %buffer = call %Buffer @read_file(i8* %name)
   %grid = call %Grid @parse_grid(%Buffer %buffer)
   store %Grid %grid, %Grid* %g
+  %open_alt = getelementptr [9 x i8], [9 x i8]* @.open_alt, i64 0, i64 0
+  call i32 (i8*, ...) @printf(i8* %open_alt)
   br label %body.1
 
 body.1:
   call void @print_grid(%Grid* %g)
   call void @update_grid(%Grid* %g)
   call i32 @"\01_usleep"(i32 %micros)
-  br label %body.1
+  %keep_running = load volatile i1, i1* @keep_running
+  br i1 %keep_running, label %body.1, label %finish
 
 error:
   ret i32 1
+
+finish:
+  %close_alt = getelementptr [9 x i8], [9 x i8]* @.close_alt, i64 0, i64 0
+  call i32 (i8*, ...) @printf(i8* %close_alt)
+  ret i32 0
+}
+
+;;; SIGINT handler
+
+define private void @handle_sigint(i32) {
+entry:
+  store volatile i1 0, i1* @keep_running
+  ret void
 }
 
 ;;; Parse integer
