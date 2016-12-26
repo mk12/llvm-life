@@ -11,12 +11,12 @@ Just run `make`.
 
 ## Usage
 
-The `life` executable takes two command-line arguments:
+The `bin/life` executable takes two command-line arguments:
 
 1. **Filename**: A text file containing the initial grid.
 2. **Delay**: The number of milliseconds to delay between each update.
 
-For example, `life grid.txt 250` would load "grid.txt" and advance to the next generation four times per second.
+For example, `bin/life grid.txt 250` would load "grid.txt" and advance to the next generation four times per second.
 
 The grid file must have the following format:
 
